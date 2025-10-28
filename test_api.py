@@ -17,10 +17,10 @@ class OCRTestSuite:
     def __init__(self, base_url: str = "http://localhost:8000"):
         self.base_url = base_url
         self.results = {
-            "pos": "PoS_A.pdf",
-            "termsheet": "TermSheet_Valenz_eMeOH.pdf",
-            "ppa": "PPA_Valenz_eMeOH.pdf",
-            "invoice": "Invoice_test.pdf"
+            "pos": None,
+            "termsheet": None,
+            "ppa": None,
+            "invoice": None
         }
     
     def print_header(self, title: str):
@@ -83,42 +83,34 @@ class OCRTestSuite:
                 # Display extracted data
                 data = result.get('data', {})
                 
-                self.print_section("Document Info")
-                doc_info = data.get('document_info', {})
-                print(f"  Type: {doc_info.get('document_type')}")
-                print(f"  Unique Number: {doc_info.get('unique_number')}")
-                print(f"  Issuance Date: {doc_info.get('issuance_date')}")
-                print(f"  Directive: {doc_info.get('directive')}")
+                self.print_section("Certificate")
+                certificate = data.get('certificate', {})
+                print(f"  PoS ID: {certificate.get('pos_id')}")
+                print(f"  Scheme: {certificate.get('scheme')}")
+                print(f"  Issuer: {certificate.get('issuer')}")
+                print(f"  Issue Date: {certificate.get('issue_date')}")
+                print(f"  Validity: {certificate.get('validity')}")
                 
                 self.print_section("Parties")
-                parties = data.get('supplier_recipient', {})
-                supplier = parties.get('supplier', {})
-                recipient = parties.get('recipient', {})
-                print(f"  Supplier: {supplier.get('name')}")
-                print(f"  Recipient: {recipient.get('name')}")
+                parties = data.get('parties', {})
+                print(f"  Supplier: {parties.get('supplier')}")
+                print(f"  Recipient: {parties.get('recipient')}")
                 
-                self.print_section("Feedstock")
-                feedstock = data.get('feedstock', {})
-                print(f"  Type: {feedstock.get('type')}")
-                print(f"  Origin: {feedstock.get('country_of_origin')}")
-                print(f"  Waste/Residue: {feedstock.get('is_waste_residue')}")
-                
-                self.print_section("Fuel Product")
-                fuel = data.get('fuel_product', {})
-                print(f"  Type: {fuel.get('type')}")
-                print(f"  Quantity: {fuel.get('quantity')} {fuel.get('unit')}")
-                print(f"  Energy: {fuel.get('energy_content_mj')} MJ")
-                print(f"  Production: {fuel.get('country_of_production')}")
+                self.print_section("Batch")
+                batch = data.get('batch', {})
+                print(f"  Batch ID: {batch.get('batch_id')}")
+                print(f"  Volume: {batch.get('batch_volume')} {batch.get('batch_volume_unit')}")
+                print(f"  Energy: {batch.get('energy_content')} {batch.get('energy_content_unit')}")
                 
                 self.print_section("GHG Emissions")
-                ghg = data.get('ghg_emissions', {})
-                print(f"  Total: {ghg.get('total_emissions_gco2eq_mj')} gCO2eq/MJ")
-                print(f"  Savings: {ghg.get('emission_saving_percentage')}%")
+                ghg = data.get('ghg', {})
+                print(f"  CI (LCA): {ghg.get('ci_lca')} {ghg.get('unit')}")
+                print(f"  CI Limit: {ghg.get('ci_limit')} {ghg.get('unit')}")
                 
-                self.print_section("Compliance")
-                compliance = data.get('compliance', {})
-                print(f"  RED II Compliant: {compliance.get('red_ii_article_29_compliant')}")
-                print(f"  Chain of Custody: {compliance.get('chain_of_custody')}")
+                self.print_section("Chain of Custody")
+                chain = data.get('chain_of_custody', {})
+                print(f"  Model: {chain.get('model')}")
+                print(f"  No Double Counting: {chain.get('no_double_counting')}")
                 
                 self.print_section("Processing Info")
                 print(f"  LLM Refined: {data.get('llm_refined')}")
